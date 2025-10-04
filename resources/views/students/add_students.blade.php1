@@ -1,0 +1,202 @@
+@extends('layouts.layout')
+
+@section('content')
+    <section class="content">
+        <div class="container px-5">
+            <div class="row">
+                <div class="col">
+                    <div class="progress mb-2">
+                        @if ($profile_completed == 0)
+                            @php
+                                $profile_completed_per = 15;
+                            @endphp
+                        @else
+                            @php
+                                $profile_completed_per = $profile_completed * 25;
+                            @endphp
+                        @endif
+                        <div id="progress_bar_div"
+                            class="progress-bar bg-{{ $completed_levels[$profile_completed_per . '%'] }}" role="progressbar"
+                            aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"
+                            style="width: {{ $profile_completed_per }}%">
+                            <span id="progress_bar_div_span">{{ $profile_completed * 25 }}% Completed </span>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                    <div class="bs-stepper linear">
+                        <div class="bs-stepper-header" role="tablist">
+                            <div class="step active" data-target="#personal_info">
+                                <button type="button" class="step-trigger" role="tab" aria-controls="personal_info"
+                                    id="personal_info-trigger" aria-selected="true">
+                                    <span class="bs-stepper-circle">1</span>
+                                    <span class="bs-stepper-label">Personal Info</span>
+                                </button>
+                            </div>
+
+                            <div class="line"></div>
+                            <div class="step" data-target="#educations_part">
+                                <button type="button" class="step-trigger" role="tab" aria-controls="educations_part"
+                                    id="educations_part-trigger" aria-selected="false" disabled>
+                                    <span class="bs-stepper-circle">2</span>
+                                    <span class="bs-stepper-label">Education</span>
+                                </button>
+                            </div>
+                            <div class="line"></div>
+                            <div class="step" data-target="#payments_part">
+                                <button type="button" class="step-trigger" role="tab" aria-controls="payments_part"
+                                    id="payments_part-trigger" aria-selected="false" disabled>
+                                    <span class="bs-stepper-circle">3</span>
+                                    <span class="bs-stepper-label">Payments</span>
+                                </button>
+                            </div>
+                            <div class="line"></div>
+                            <div class="step" data-target="#document_upload">
+                                <button type="button" class="step-trigger" role="tab" aria-controls="document_upload"
+                                    id="document_upload-trigger" aria-selected="false" disabled>
+                                    <span class="bs-stepper-circle">4</span>
+                                    <span class="bs-stepper-label">Document Upload</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bs-stepper-content">
+                            <div id="personal_info" class="content active dstepper-block" role="tabpanel"
+                                aria-labelledby="personal_info-trigger">
+                                @include('students.create_student.personal_info')
+                            </div>
+                            <div id="educations_part" class="content" role="tabpanel"
+                                aria-labelledby="educations_part-trigger">
+                                @include('students.create_student.educations')
+                            </div>
+                            <div id="payments_part" class="content" role="tabpanel" aria-labelledby="payments_part-trigger">
+                                @include('students.create_student.payments')
+                            </div>
+                            <div id="document_upload" class="content" role="tabpanel"
+                                aria-labelledby="document_upload-trigger">
+                                @include('students.create_student.documents')
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="modal" id="modal_create_student" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modal_title"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modal_body">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // stepper.to(3)
+
+            $('#save_student_details').on('click', function() {
+                var currentStepIndex = window.stepper._currentIndex;
+                if (window.confirm("Are you sure you want to update the student's details?")) {
+                    if (currentStepIndex == 0) {
+                        save_students_personal_info();
+
+                    } else if (currentStepIndex == 1) {
+                        save_educational_qualification();
+                    } else if (currentStepIndex == 2) {
+                        save_payments_form();
+                    } else if (currentStepIndex == 3) {
+                        save_docs_form();
+                    }
+
+                }
+            });
+
+        })
+
+        function loadOptions(params, url, func, elem, selected_id = '', trigger_change = '', save_not_exist = '') {
+            params._token = "{{ csrf_token() }}";
+            preloader.load('loader-container');
+            $.ajax({
+                url: `{{ url('${url}') }}`,
+                type: 'post',
+                data: params,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    preloader.stop('loader-container');
+                    // if (response.length == 0 && save_not_exist == 'save') {
+
+                    //     params.save_as_new = "true";
+                    //     loadOptions(params, url, func, elem, selected_id, trigger_change);
+                    // }
+
+                    func(response, elem, selected_id, trigger_change);
+
+                },
+            });
+        }
+
+        function updateOptions(data, elem, selected_id = 0, trigger_change = '') {
+            const $elem = $(elem);
+            $elem.empty(); // Clear current options
+            $elem.append(`<option value="">Select Option</option>`);
+
+            data.forEach(item => {
+                let selected = selected_id == item.id ? 'selected' : '';
+                let option = '';
+
+                if (item.state) {
+                    option = `<option 
+                        value="${item.id}" 
+                        state_name="${item.state.name}" 
+                        state_id="${item.state.id}" 
+                        country_id="${item.state.country.id}" 
+                        country_name="${item.state.country.name}" 
+                        ${selected}>
+                            ${item.name}, ${item.state.name}, ${item.state.country.name}
+                    </option>`;
+                } else if (item.country_id) {
+                    const country_name = item.country ? item.country.name : item.country_name;
+                    option = `<option value="${item.id}" country_name="${country_name}" country_id="${item.country_id}" ${selected}>
+                    ${item.name}, ${country_name}
+                </option>`;
+                } else {
+                    option = `<option value="${item.id}" ${selected}>${item.name}</option>`;
+                }
+
+                $elem.append(option);
+            });
+
+            $elem.selectpicker('refresh'); // Refresh the selectpicker once
+
+            if (trigger_change) {
+                $elem.trigger('change');
+            }
+        }
+
+        function updateProgress(profile_completed, class_name, remove_class, max_prolfile_completed = 4) {
+            // console.log(class_name)
+            $('#progress_bar_div').css('width', `${profile_completed * 25}%`);
+            $('#progress_bar_div').removeClass(`bg-${ remove_class }`);
+            $('#progress_bar_div').addClass(`bg-${ class_name }`);
+            $('#progress_bar_div_span').html(`${ profile_completed } / ${ max_prolfile_completed } Steps Completed `)
+        }
+    </script>
+@endsection
