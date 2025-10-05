@@ -112,7 +112,7 @@
     <script>
         $(document).ready(function() {
             // const currentPath = "{{ $path }}";
-            // const requestMethod = "{{$requestMethod}}";
+            // const requestMethod = "{{ $requestMethod }}";
             // Object.keys(localStorage).forEach(key => {
             //     if (key == 'form_datas') {
             //         const value = localStorage.getItem(key);
@@ -137,22 +137,25 @@
     </script>
     <script src="{{ asset('/js/jquery.min.js') }}"></script>
 
-<script src="{{ asset('/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('/js/jquery.min.js') }}"></script>
 
-<script>
-    // attach CSRF token to ALL jQuery AJAX requests
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-</script>
+    <script>
+        // attach CSRF token to ALL jQuery AJAX requests
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
 
-<script src="{{ asset('/js/ajax_loader.js') }}"></script>
+    <script src="{{ asset('/js/ajax_loader.js') }}"></script>
+
+    
+    @yield('script')
+
 
 </body>
 
-@yield('script')
 
 
 </html>

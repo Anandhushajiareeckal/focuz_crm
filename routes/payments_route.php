@@ -20,17 +20,15 @@ Route::middleware(['auth', 'verified', 'check_url_access'])->group(function () {
     Route::post('/save_installment', [CourseInstallmentsController::class, 'saveInstallment'])->name('save_installment');
     
     
-  // AJAX endpoint to generate offer letter
-// Route::post('/offer-letter/generate', [PaymentController::class, 'OfferLetterGenerate'])
-//      ->name('offer_letter_generate');
+  
 
 // // Stream/download route (returns inline PDF)
-// Route::get('/offer_letter/download/{id}', [OfferLetterController::class, 'download'])
-//     ->name('offer_letter_download');
+Route::get('/offer_letter/download/{id}', [OfferLetterController::class, 'download'])
+    ->name('offer_letter_download');
 
 
- Route::post('/offerletter_print', [PaymentController::class, 'OfferLetterPrint'])->name('offerletter_print');
-
+// Route::get('/offer_letter/view', [OfferLetterController::class, 'show'])
+//     ->name('offer_letter_view');
 
 
 });

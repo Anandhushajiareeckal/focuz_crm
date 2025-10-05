@@ -115,7 +115,7 @@
 
                 <td>{{ number_format(floatval($pending_amount), 2) }}</td>
                 <td>{{ number_format(floatval($payed_amount), 2) }}</td>
-
+                
                 <td class="{{ $class }}"> {{ ucwords($student->payment_status) }}</td>
                 <td class="{{ $student->document_status === 'approved' ? 'text-success' : ($student->document_status === 'rejected' ? 'text-danger' : 'text-warning') }}">
                     {{ $student->document_status ? ucfirst($student->document_status) : ' Pending' }}

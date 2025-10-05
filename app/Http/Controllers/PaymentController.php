@@ -505,14 +505,7 @@ class PaymentController extends Controller
 
                 $payments->status = 'active';
                 $payments->save();
-                
-            //    Generate Offer Letter immediately after approval
-            
-                // Auto-generate Offer Letter
-                $offerLetterController = new OfferLetterController();
-                $offerLetterController->OfferLetterAutoGenerate($payments->id);
             }
-            
         }
         $non_approved_invoices_cnt = count($non_approved_invoices);
         $approved_invoices_cnt = count($approved_invoices);
@@ -681,75 +674,6 @@ class PaymentController extends Controller
         }
     }
 
-      
-public function OfferLetterGenerate($checked_id, $return_data = false)
-{
-    $payment_data = Payments::with([
-        'courses:id,specialization,university_id,stream_id',
-        'courses.streams:id,code',
-        'course_schedule:id,admission_date,branch_id',
-        'student:id,first_name,last_name,email,phone_number',
-        'created_user:id,name',
-        'banks:id,bank_name'
-    ])->find($checked_id);
-
-    if (!$payment_data) {
-        return response()->json(['error' => 'Payment not found.'], 404);
-    }
-
-    // Only approved payments can generate offer letters
-    if ($payment_data->status !== 'active') {
-        return response()->json(['error' => 'Offer letter can only be generated for approved payments.'], 422);
-    }
-
-    // Check if offer letter is already generated
-    if ($payment_data->offer_letter_path && file_exists(storage_path('app/public/offer_letters/' . $payment_data->offer_letter_path))) {
-        $pdf_url = route('offer_letter_download', ['filename' => $payment_data->offer_letter_path]);
-        return $return_data ? $pdf_url : response()->json(['pdf_url' => $pdf_url]);
-    }
-
-    // Fetch related course payment and branch/university
-    $course_payment = CoursePayments::where('student_id', $payment_data->student->id)
-        ->where('course_id', $payment_data->courses->id)
-        ->where('course_schedule_id', $payment_data->course_schedule->id)
-        ->first();
-
-    $university_name = Universities::where('id', $payment_data->courses->university_id)->value('name');
-    $branch_name     = Branches::where('id', $course_payment->branch_id)->value('name');
-
-    $offerData = [
-        'receiver_name'    => trim($payment_data->student->first_name . ' ' . $payment_data->student->last_name),
-        'course_name'      => $payment_data->courses->streams->code . ' ' . $payment_data->courses->specialization,
-        'institution'      => $university_name,
-        'branch'           => $branch_name,
-        'receiver_mobile'  => $payment_data->student->phone_number,
-        'receiver_email'   => $payment_data->student->email,
-        'student_track_id' => $course_payment->student_track_id,
-        'offer_date'       => now()->format('d-m-Y'),
-        'admission_date'   => $course_payment->admission_date,
-        'created_by'       => $payment_data->created_user->name ?? '',
-    ];
-
-    $pdfDirectory = storage_path('app/public/offer_letters');
-    if (!file_exists($pdfDirectory)) mkdir($pdfDirectory, 0777, true);
-
-    $fileName = 'offer_letter_' . $payment_data->id . '_' . time() . '.pdf';
-    $pdfPath = $pdfDirectory . '/' . $fileName;
-
-    // Generate PDF using a Blade view
-    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('payments.pdfs.offer_letter', $offerData);
-    $pdf->save($pdfPath);
-
-    // Save the filename in DB
-    $payment_data->offer_letter_path = $fileName;
-    $payment_data->save();
-
-    $pdf_url = route('offer_letter_download', ['filename' => $fileName]);
-
-    return $return_data ? $pdf_url : response()->json(['pdf_url' => $pdf_url]);
-}
-
-    
 
 
     public function ViewPromotions()

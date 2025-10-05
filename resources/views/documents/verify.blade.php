@@ -80,15 +80,17 @@
     </div>
 </section>
 
+
+@endsection
+@section('script')
+
 <script>
 $(document).ready(function() {
-    $('#documents_table').DataTable({
-        lengthMenu: [10, 25, 100, 500],
-        pageLength: 25
-    });
+    
 
     //  Approve/Reject with optional screenshot upload
     $(document).on('click', '.update-status', function(e) {
+        
         e.preventDefault();
         var id = $(this).data('id');
         var status = $(this).data('status');
@@ -98,7 +100,8 @@ $(document).ready(function() {
         formData.append('_token', "{{ csrf_token() }}");
         formData.append('document_id', id);
         formData.append('status', status);
-
+        console.log(status);
+        
         if (fileInput && fileInput.files.length > 0) {
             formData.append('screenshot', fileInput.files[0]);
         }
@@ -114,24 +117,24 @@ $(document).ready(function() {
                     if (response.success) {
                         let row = $('#row_' + id);
                         let statusCell = row.find('.status-cell');
+                        window.location.reload();
+                        // // Update plain colored text
+                        // if (status === 'approved') {
+                        //     statusCell.html('<span style="color:green; font-weight:bold;">Approved</span>');
+                        // } else if (status === 'rejected') {
+                        //     statusCell.html('<span style="color:red; font-weight:bold;">Rejected</span>');
+                        // } else {
+                        //     statusCell.html('<span style="color:orange; font-weight:bold;">Pending</span>');
+                        // }
 
-                        // Update plain colored text
-                        if (status === 'approved') {
-                            statusCell.html('<span style="color:green; font-weight:bold;">Approved</span>');
-                        } else if (status === 'rejected') {
-                            statusCell.html('<span style="color:red; font-weight:bold;">Rejected</span>');
-                        } else {
-                            statusCell.html('<span style="color:orange; font-weight:bold;">Pending</span>');
-                        }
-
-                        //  Update screenshot link if new screenshot uploaded
-                        if (response.screenshot_url) {
-                            let screenshotCell = row.find('td:nth-child(6)');
-                            screenshotCell.find('.btn-secondary').remove();
-                            screenshotCell.prepend(
-                                '<a href="'+response.screenshot_url+'" target="_blank" class="btn btn-sm btn-secondary mb-1">View Screenshot</a>'
-                            );
-                        }
+                        // //  Update screenshot link if new screenshot uploaded
+                        // if (response.screenshot_url) {
+                        //     let screenshotCell = row.find('td:nth-child(6)');
+                        //     screenshotCell.find('.btn-secondary').remove();
+                        //     screenshotCell.prepend(
+                        //         '<a href="'+response.screenshot_url+'" target="_blank" class="btn btn-sm btn-secondary mb-1">View Screenshot</a>'
+                        //     );
+                        // }
                     } else {
                         alert("Error: " + response.message);
                     }
@@ -143,5 +146,14 @@ $(document).ready(function() {
         }
     });
 });
+
+
+$('#documents_table').DataTable({
+        lengthMenu: [10, 25, 100, 500],
+        pageLength: 25
+    });
+
+
 </script>
+
 @endsection

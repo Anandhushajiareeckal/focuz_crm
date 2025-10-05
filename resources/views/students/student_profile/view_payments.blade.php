@@ -57,11 +57,13 @@
                                     'card_types:id,type_name',
                                     'banks:id,bank_name',
                                 ])
-                                ->where('student_id', $student_id)
-                                ->where('course_id', $course_id)
-                                ->get();
+                                    ->where('student_id', $student_id)
+                                    ->where('course_id', $course_id)
+                                    ->get();
 
-                                $course_fee = App\Models\CourseSchedules::where('id', $course_schedule_id)->value('course_fee');
+                                $course_fee = App\Models\CourseSchedules::where('id', $course_schedule_id)->value(
+                                    'course_fee',
+                                );
                             @endphp
 
                             @if ($paymentsDataAr->count() > 0)
@@ -82,29 +84,37 @@
                                             $balance_amount = max(0, $course_fee - $total_paid_amount);
                                         }
 
-                                        $table_class = ($paymentsData->status == 'active') ? 'table-primary' : 'table-warning';
+                                        $table_class =
+                                            $paymentsData->status == 'active' ? 'table-primary' : 'table-warning';
                                     @endphp
 
                                     <tr class="{{ $table_class }}">
-                                        <td style="max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                            <span style="display:inline-block; max-width:inherit; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">
-                                                {{ $coursePayment->courses->universities->university_code ?? '' }} {{ $course_name }}
+                                        <td
+                                            style="max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                            <span
+                                                style="display:inline-block; max-width:inherit; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">
+                                                {{ $coursePayment->courses->universities->university_code ?? '' }}
+                                                {{ $course_name }}
                                             </span>
                                         </td>
 
                                         <td>{{ $paymentsData->payment_methods->method_name ?? '-' }}</td>
                                         <td>{{ $paymentsData->banks->bank_name ?? '-' }}</td>
                                         <td>{{ $paymentsData->card_types->type_name ?? '-' }}</td>
-                                        <td>{{ $paymentsData->payment_date ? date('d-m-Y', strtotime($paymentsData->payment_date)) : '-' }}</td>
+                                        <td>{{ $paymentsData->payment_date ? date('d-m-Y', strtotime($paymentsData->payment_date)) : '-' }}
+                                        </td>
                                         <td>{{ $paymentsData->transaction_ref ?? '-' }}</td>
                                         <td>{{ number_format($course_fee, 2) }}</td>
-                                        <td class="text-right font-weight-bold text-primary">{{ number_format($amount, 2) }}</td>
-                                        <td class="text-right font-weight-bold text-primary">{{ number_format($discount_amount, 2) }}</td>
+                                        <td class="text-right font-weight-bold text-primary">
+                                            {{ number_format($amount, 2) }}</td>
+                                        <td class="text-right font-weight-bold text-primary">
+                                            {{ number_format($discount_amount, 2) }}</td>
                                         <td class="text-right">{{ number_format($payed_amount, 2) }}</td>
                                         <td>{{ number_format($total_paid_amount, 2) }}</td>
                                         <td>
                                             @if ($balance_amount > 0)
-                                                <a href="{{ route('add_students', [4, $student_id, $course_id, $course_schedule_id]) }}" target="_blank">
+                                                <a href="{{ route('add_students', [4, $student_id, $course_id, $course_schedule_id]) }}"
+                                                    target="_blank">
                                                     {{ number_format($balance_amount, 2) }}
                                                 </a>
                                             @else
@@ -113,13 +123,16 @@
                                         </td>
 
                                         <td>{{ ucwords($paymentsData->status) }}</td>
-
+                                        
                                         {{-- Invoice --}}
                                         <td>
-                                            @if (in_array($paymentsData->status, ['pending','reversed']))
-                                                <a href="{{ route('payments_approve', ['reversed']) }}" target="_blank">Process Payment</a>
+                                            @if (in_array($paymentsData->status, ['pending', 'reversed']))
+                                                <a href="{{ route('payments_approve', ['reversed']) }}"
+                                                    target="_blank">Process Payment</a>
                                             @elseif ($paymentsData->verified_by)
-                                                <i class="fa fa-file-pdf text-danger download_invoice" data-id="{{ $paymentsData->id }}" style="font-size:12pt;cursor:pointer"></i>
+                                                <i class="fa fa-file-pdf text-danger download_invoice"
+                                                    data-id="{{ $paymentsData->id }}"
+                                                    style="font-size:12pt;cursor:pointer"></i>
                                             @else
                                                 CONTACT IT
                                             @endif
@@ -127,25 +140,32 @@
 
                                         {{-- Offer Letter --}}
                                         <!--<td>-->
-                                        <!--    @if ($paymentsData->status == 'active' && $paymentsData->verified_by)-->
-                                                <!-- Active and verified: Green, clickable -->
+                                        <!--    @if ($paymentsData->status == 'active' && $paymentsData->verified_by)
+-->
+                                        <!-- Active and verified: Green, clickable -->
                                         <!--        <i class="fa fa-envelope text-success download_offer_letter" -->
                                         <!--           data-id="{{ $paymentsData->id }}" -->
                                         <!--           style="font-size:12pt;cursor:pointer"></i>-->
-                                        <!--    @elseif ($paymentsData->status == 'pending')-->
-                                                <!-- Pending: Gray, not clickable -->
+                                        <!--
+@elseif ($paymentsData->status == 'pending')
+-->
+                                        <!-- Pending: Gray, not clickable -->
                                         <!--        <i class="fa fa-envelope text-secondary" -->
                                         <!--           style="font-size:12pt;cursor:not-allowed" -->
                                         <!--           title="Offer letter will be available after payment verification"></i>-->
-                                        <!--    @else-->
+                                    <!--    @else-->
                                         <!--        CONTACT IT-->
-                                        <!--    @endif-->
+                                        <!--
+@endif-->
                                         <!--</td>-->
-                                            <td>
-                                            @if (in_array($paymentsData->status, ['pending','reversed']))
-                                                <a href="{{ route('payments_approve', ['reversed']) }}" target="_blank">Process Payment</a>
+                                        <td>
+                                            @if (in_array($paymentsData->status, ['pending', 'reversed']))
+                                                <a href="{{ route('payments_approve', ['reversed']) }}"
+                                                    target="_blank">Process Payment</a>
                                             @elseif ($paymentsData->verified_by)
-                                                <i class="fa fa-envelope text-success download_offer_letter" data-id="{{ $paymentsData->id }}" style="font-size:12pt;cursor:pointer"></i>
+                                                <i class="fa fa-envelope text-success download_offer_letter"
+                                                    data-id="{{ $paymentsData->student_id }}"
+                                                    style="font-size:12pt;cursor:pointer"></i>
                                             @else
                                                 CONTACT IT
                                             @endif
@@ -163,41 +183,38 @@
 
 <style>
     td:hover {
-        max-width: 800px !important; 
+        max-width: 800px !important;
         white-space: normal !important;
     }
 </style>
 
 <script>
-$(document).ready(function() {
-    $('.download_invoice').click(function(e) {
-        e.preventDefault();
-        var checkedIds = [$(this).attr('data-id')];
-        preloader.load();
-        $.ajax({
-            type: "POST",
-            url: "{{ route('invoice_print') }}",
-            data: {
-                '_token': "{{ csrf_token() }}",
-                "checkedIdsJson": checkedIds
-            },
-            success: function(response) {
-                preloader.stop();
-                $('#download').attr('href', response);
-                $('#download')[0].click();
-            }
+    $(document).ready(function() {
+        $('.download_invoice').click(function(e) {
+            e.preventDefault();
+            var checkedIds = [$(this).attr('data-id')];
+            preloader.load();
+            $.ajax({
+                type: "POST",
+                url: "{{ route('invoice_print') }}",
+                data: {
+                    '_token': "{{ csrf_token() }}",
+                    "checkedIdsJson": checkedIds
+                },
+                success: function(response) {
+                    preloader.stop();
+                    $('#download').attr('href', response);
+                    $('#download')[0].click();
+                }
+            });
         });
-    });
 
-    $(document).on("click", ".download_offer_letter", function (e) {
-        e.preventDefault();
-        let paymentId = $(this).data("id");
-        let link = document.createElement('a');
-        link.href = "/offer_letter/download/" + paymentId;
-        link.download = "offer_letter_" + paymentId + ".pdf";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        $(document).on("click", ".download_offer_letter", function(e) {
+            e.preventDefault();
+
+            let paymentId = $(this).data("id");
+            window.location.href = "/offer_letter/download/" + paymentId;
+        });
+
     });
-});
 </script>

@@ -50,31 +50,36 @@
                                 <td>{{ $key + 1 }}</td>
                                 <td>{{ $documentsData->doc_category->category_name }}</td>
                                 <td>
-                                    <a href="{{ asset('storage/' . $documentsData->document_path) }}" target="_blank">View file</a>
+                                    <a href="{{ asset('storage/' . $documentsData->document_path) }}"
+                                        target="_blank">View file</a>
                                 </td>
-<!--                                <td>-->
-<!--    @php-->
-<!--        $offerPath = $payment->offer_letter_path ?? null;-->
-<!--        $fileExists = $offerPath && file_exists(storage_path('app/public/offer_letters/' . $offerPath));-->
-<!--    @endphp-->
+                                {{-- <td>
+                                    @php
+                                        $offerPath = $payment->offer_letter_path ?? null;
+                                        $fileExists =
+                                            $offerPath &&
+                                            file_exists(storage_path('app/public/offer_letters/' . $offerPath));
+                                    @endphp
 
-<!--    @if($payment->status === 'active')-->
-<!--        @if($fileExists)-->
-<!--            <a href="{{ route('offer_letter_download', ['filename' => $offerPath]) }}" target="_blank">-->
-<!--                <i class="fa fa-file-pdf text-success"></i> Download Offer Letter-->
-<!--            </a>-->
-<!--        @else-->
-<!--            <a href="javascript:void(0);" class="download_offerletter" data-id="{{ $payment->id }}">-->
-<!--                <i class="fa fa-file-pdf text-primary"></i> Generate Offer Letter-->
-<!--            </a>-->
-<!--        @endif-->
-<!--    @else-->
-<!--        <i class="fa fa-file-pdf text-muted" title="Payment not approved"></i>-->
-<!--    @endif-->
-<!--</td>-->
+                                    @if ($payment->status === 'active')
+                                        @if ($fileExists)
+                                            <a href="{{ route('offer_letter_download', ['filename' => $offerPath]) }}"
+                                                target="_blank">
+                                                <i class="fa fa-file-pdf text-success"></i> Download Offer Letter
+                                            </a>
+                                        @else
+                                            <a href="javascript:void(0);" class="download_offerletter"
+                                                data-id="{{ $payment->id }}">
+                                                <i class="fa fa-file-pdf text-primary"></i> Generate Offer Letter
+                                            </a>
+                                        @endif
+                                    @else
+                                        <i class="fa fa-file-pdf text-muted" title="Payment not approved"></i>
+                                    @endif
+                                </td> --}}
 
 
-                       </tr>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>

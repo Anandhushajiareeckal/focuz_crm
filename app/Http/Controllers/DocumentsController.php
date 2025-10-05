@@ -96,6 +96,7 @@ class DocumentsController extends Controller
 
 public function updateStatus(Request $request)
 {
+    
     try {
         $request->validate([
             'document_id' => 'required|exists:documents,id',
