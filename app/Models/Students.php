@@ -80,6 +80,11 @@ class Students extends Model
         return $this->hasMany(Payments::class, 'student_id');
     }
 
+     public function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id', 'id');
+    }
+
     public function course_payment()
     {
         return $this->hasMany(CoursePayments::class, 'student_id'); // Assuming 'branch_id' is the foreign key

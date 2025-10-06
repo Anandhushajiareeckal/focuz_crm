@@ -332,9 +332,9 @@ class StudentController extends Controller
         //     $count += $c;
         // }
         // return $count;
-       $studentsQuery = DB::table('students')
+      $studentsQuery = DB::table('students')
     ->leftJoin('course_payments', 'students.id', '=', 'course_payments.student_id')
-    ->leftJoin('documents', 'students.id', '=', 'documents.student_id') // 👈 join documents
+    ->leftJoin('documents', 'students.id', '=', 'documents.student_id')
     ->select(
         'students.id',
         'students.city_id',
@@ -350,7 +350,7 @@ class StudentController extends Controller
         'students.phone_number',
         'students.postal_code',
         'students.profile_completion',
-        'documents.status as document_status', // 👈 pick status from documents table
+        'documents.status as document_status', 
         'course_payments.id as payment_id',
         'course_payments.admission_date',
         'course_payments.payment_status',
@@ -363,7 +363,9 @@ class StudentController extends Controller
         'course_payments.university_loginid',
         'course_payments.university_loginpass',
         'course_payments.branch_id',
-    );
+    )
+    ->distinct();
+
 
 
         $filters = [

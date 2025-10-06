@@ -139,25 +139,7 @@
                                         </td>
 
                                         {{-- Offer Letter --}}
-                                        <!--<td>-->
-                                        <!--    @if ($paymentsData->status == 'active' && $paymentsData->verified_by)
--->
-                                        <!-- Active and verified: Green, clickable -->
-                                        <!--        <i class="fa fa-envelope text-success download_offer_letter" -->
-                                        <!--           data-id="{{ $paymentsData->id }}" -->
-                                        <!--           style="font-size:12pt;cursor:pointer"></i>-->
-                                        <!--
-@elseif ($paymentsData->status == 'pending')
--->
-                                        <!-- Pending: Gray, not clickable -->
-                                        <!--        <i class="fa fa-envelope text-secondary" -->
-                                        <!--           style="font-size:12pt;cursor:not-allowed" -->
-                                        <!--           title="Offer letter will be available after payment verification"></i>-->
-                                    <!--    @else-->
-                                        <!--        CONTACT IT-->
-                                        <!--
-@endif-->
-                                        <!--</td>-->
+                                        
                                         <td>
                                             @if (in_array($paymentsData->status, ['pending', 'reversed']))
                                                 <a href="{{ route('payments_approve', ['reversed']) }}"

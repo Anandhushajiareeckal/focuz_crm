@@ -82,18 +82,9 @@ Route::middleware(['auth', 'verified', 'check_url_access'])->group(function () {
     Route::get('/documents', [DocumentsController::class, 'verify'])->name('documents.verify');
 Route::post('/documents/update-status', [DocumentsController::class, 'updateStatus'])->name('documents.update-status');
 
-Route::get('/offer-letter/design', function() {
-    return view('payments.pdfs.offer_letter'); 
-})->name('offer_letter_design');
-
-
-
- 
-
 Route::post('/students/{id}/update-document-status', [StudentController::class, 'updateDocumentVerificationStatus'])->name('students.updateDocumentVerificationStatus');
 
-// Route::get('/offer-letter/preview', [OfferLetterController::class, 'previewOfferLetter'])
-//     ->name('offer_letter_preview');
+
 
 
 });

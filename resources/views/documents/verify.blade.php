@@ -39,13 +39,13 @@
                             <td>
                                 <a href="{{ asset('storage/'.$doc->document_path) }}" target="_blank">View File</a>
                             </td>
-                            <td class="{{ $doc->status === 'approved' 
-                ? 'text-success' 
-                : ($doc->status === 'rejected' 
-                    ? 'text-danger' 
-                                    : 'text-warning') }}">
-                    {{ $doc->status ? ucfirst($doc->status) : 'Verification Pending...' }}
-                </td>
+                                                <td class="{{ $doc->status === 'approved' 
+                                    ? 'text-success' 
+                                    : ($doc->status === 'rejected' 
+                                        ? 'text-danger' 
+                                                        : 'text-warning') }}">
+                            {{ $doc->status ? ucfirst($doc->status) : 'Verification Pending...' }}
+                        </td>
 
                             <td>
                                 @if($doc->verification_screenshot)
@@ -57,6 +57,8 @@
                                 <input type="file" class="form-control form-control-sm screenshot-input"
                                        data-id="{{ $doc->id }}">
                             </td>
+
+                            
                             <td>
                                 <button type="button" class="btn btn-sm btn-info update-status"
                                         data-id="{{ $doc->id }}" data-status="approved">

@@ -52,6 +52,23 @@
                                placeholder="Enter GPA" value="{{ $educationData->gpa }}">
                     </div>
                 </div>
+                 <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="abc_id">ABC ID <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="abc_id"
+                               name="abc_id" placeholder="Enter ABC ID"
+                               value="{{ $educationData->abc_id ?? '' }}">
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="deb_id">DEB ID <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="deb_id"
+                               name="deb_id" placeholder="Enter DEB ID"
+                               value="{{ $educationData->deb_id ?? '' }}">
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -59,7 +76,7 @@
 
 
 {{-- ✅ New University Details Section --}}
-<div class="card card-default ">
+<!-- <div class="card card-default ">
     <div class="card-header">
         <h3 class="card-title">University Details</h3>
         <div class="card-tools">
@@ -99,7 +116,7 @@
             </div>
         </form>
     </div>
-</div>
+</div> -->
 
 
 <script>

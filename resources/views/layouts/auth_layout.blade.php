@@ -16,7 +16,7 @@
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
-            <img src="{{ asset('images/logo.png') }}" width="100" height="100" loading="lazy" alt="">
+            <img src="{{ public_path('logo.png') }}" width="100" height="100" loading="lazy" alt="">
         </div>
 
         <div class="card">

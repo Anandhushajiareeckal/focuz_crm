@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers;
-
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Students;
 
@@ -16,7 +14,7 @@ class OfferLetterController extends Controller
         }
         $pdf = Pdf::setOption(['isRemoteEnabled' => true])
           ->loadView('payments.pdfs.offer_letter',compact('student'));
-        return $pdf->download('invoice_'.$id.'.pdf');
+        return $pdf->download('offerletter_'.$id.'.pdf');
     }
 
 
@@ -25,3 +23,5 @@ class OfferLetterController extends Controller
     //     return view('payments.pdfs.offer_letter');
     // }
 }
+
+

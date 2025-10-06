@@ -29,14 +29,7 @@
                       </p>
                   </a>
               </li>
-               <li class="nav-item">
-                  <a href="{{route('offer_letter_design')}}" class="nav-link">
-                      <i class="nav-icon fas fa-tachometer-alt"></i>
-                      <p>
-                          offer letter
-                      </p>
-                  </a>
-              </li>
+               
            
               <li class="nav-item">
                   <a href="#" class="nav-link">

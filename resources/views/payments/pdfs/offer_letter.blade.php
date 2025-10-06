@@ -319,11 +319,12 @@
             </tr>
             <tr>
                 <td>Registered Mobile Number</td>
-                <td>+91 9526114827</td>
+                <td>{{ $student->phone_number}}</td>
             </tr>
+            
             <tr>
                 <td>Email Address</td>
-                <td>abhiachuzvz007@gmail.com</td>
+                <td>{{ $student->email}}</td>
             </tr>
             <tr>
                 <td>Course / Specialization</td>
