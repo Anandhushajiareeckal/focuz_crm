@@ -665,29 +665,30 @@ class StudentController extends Controller
                 DB::raw("CONCAT(streams.code, ' ', courses.specialization, ', ', universities.university_code) AS name")
             )
             ->get();
-        return view('students.view_students.view_student_filter', [
-            'marital_statusAr' => $marital_statusAr,
-            'employment_statusesAr' => $employment_statusesAr,
-            'countriesAr' => $countriesAr,
-            'coursesAr' => $coursesAr,
-            'name' => $request->input('name'),
-            'gender' => $request->input('gender'),
-            'phone_number' => $request->input('phone_number'),
-            'email' => $request->input('email'),
-            'country' => $country,
-            'state' => $state,
-            'city' => $city,
-            'university' => $request->input('university'),
-            'degree' => $request->input('degree'),
-            'course' => explode(",", $request->input('course')),
-            'profile_completionAr' => $profile_completionAr,
-            'genderAr' => $genderAr,
-            'paymentStatusAr' => $paymentStatusAr,
-            'pending_payments' =>  $request->input('pending_payments'),
-            'pending_profile_completion' =>  $request->input('pending_profile_completion'),
-            'states' => $states,
-            'cities' => $cities
-        ]);
+            
+            return view('students.view_students.view_student_filter', [
+                'marital_statusAr' => $marital_statusAr,
+                'employment_statusesAr' => $employment_statusesAr,
+                'countriesAr' => $countriesAr,
+                'coursesAr' => $coursesAr,
+                'name' => $request->input('name'),
+                'gender' => $request->input('gender'),
+                'phone_number' => $request->input('phone_number'),
+                'email' => $request->input('email'),
+                'country' => $country,
+                'state' => $state,
+                'city' => $city,
+                'university' => $request->input('university'),
+                'degree' => $request->input('degree'),
+                'course' => explode(",", $request->input('course')),
+                'profile_completionAr' => $profile_completionAr,
+                'genderAr' => $genderAr,
+                'paymentStatusAr' => $paymentStatusAr,
+                'pending_payments' =>  $request->input('pending_payments'),
+                'pending_profile_completion' =>  $request->input('pending_profile_completion'),
+                'states' => $states,
+                'cities' => $cities
+            ]);
     }
 
     public function view_profile($step, $student_id)
@@ -716,6 +717,7 @@ class StudentController extends Controller
             )
                 ->where('student_id', $student_id)
                 ->where('status', 'active')
+                
                 ->get();
 
 

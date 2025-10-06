@@ -20,7 +20,7 @@
                             <th>Category</th>
                             <th>Document</th>
                             <th>Status</th>
-                            <th>Welcome Mail Screenshot</th>
+                            <th> Uploade Welcome Mail Screenshot</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
