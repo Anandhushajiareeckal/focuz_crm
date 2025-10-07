@@ -45,10 +45,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping, WithS
             'Email',
             'Phone',
             'Address',
-            'sslc_board',
-            'sslc_passout',
-            'intermediate_board',
-            'intermediate_passout',
+            
             'Last completed course',
             'Last completed course board',
             'City',
@@ -65,6 +62,10 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping, WithS
             'Payment Status',
             'Profile Status',
             'Next Payment Date',
+            'sslc_board',
+            'sslc_passout',
+            'intermediate_board',
+            'intermediate_passout',
         ];
     }
 
@@ -144,6 +145,11 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping, WithS
             $student->payment_status, //R
             ($student->profile_completion * 25) / 100, //S
             $student->next_payment_date, //T
+            
+            $sslc_board = $education->sslc_board ?? '',             
+            $sslc_passout = $education->sslc_passout ?? '',
+            $intermediate_board = $education->intermediate_board ?? '',
+            $intermediate_passout = $education->intermediate_passout ?? '',    
             // Add more fields as needed
         ];
     }

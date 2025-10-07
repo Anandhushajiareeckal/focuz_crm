@@ -99,7 +99,7 @@
 </div>
 
 
-{{-- ✅ New University Details Section --}}
+<!--  University Details Section  -->
 <div class="card card-default ">
     <div class="card-header">
         <h3 class="card-title">University Details</h3>
@@ -122,7 +122,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="abc_id">ABC ID <span class="text-danger">*</span></label>
+                        <label for="abc_id">ABC ID </label>
                         <input type="text" class="form-control form-control-sm" id="abc_id"
                                name="abc_id" placeholder="Enter ABC ID"
                                value="{{ $educationData->abc_id ?? '' }}">
@@ -131,7 +131,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="deb_id">DEB ID <span class="text-danger">*</span></label>
+                        <label for="deb_id">DEB ID </label>
                         <input type="text" class="form-control form-control-sm" id="deb_id"
                                name="deb_id" placeholder="Enter DEB ID"
                                value="{{ $educationData->deb_id ?? '' }}">

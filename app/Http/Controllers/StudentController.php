@@ -446,7 +446,7 @@ class StudentController extends Controller
     }
 
 
-    
+
  public function updateDocumentVerificationStatus(Request $request, $id)
     {
         $request->validate([
