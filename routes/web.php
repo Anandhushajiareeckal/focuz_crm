@@ -82,7 +82,7 @@ Route::middleware(['auth', 'verified', 'check_url_access'])->group(function () {
     Route::get('/documents', [DocumentsController::class, 'verify'])->name('documents.verify');
 Route::post('/documents/update-status', [DocumentsController::class, 'updateStatus'])->name('documents.update-status');
 
-Route::post('/students/{id}/update-document-status', [StudentController::class, 'updateDocumentVerificationStatus'])->name('students.updateDocumentVerificationStatus');
+
 
 
 

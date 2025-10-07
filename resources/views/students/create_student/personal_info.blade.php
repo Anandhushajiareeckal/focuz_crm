@@ -1,3 +1,6 @@
+
+
+
 <div class="card card-default">
 
     <div class="card-header">
@@ -143,7 +146,7 @@
 
                             <select class="form-control selectpicker" data-size="10" id="city" name="city"
                                 data-live-search="true" style="width: 100%;">
-                            </select>
+                            </select>                        
                         </div>
                     </div>
                 </div>
@@ -335,15 +338,15 @@
                     '#nationality', nationality_id);
             }
         }
-        // save_qualification
-        // save_payments
-        // save_all
-        $('#dob').datepicker({
-            changeYear: true,
-            changeMonth: true,
-            yearRange: '1965:-4',
-            dateFormat: "dd-mm-yy", // Set the date format
-        });
+                // save_qualification
+                // save_payments
+                // save_all
+                $('#dob').datepicker({
+                changeYear: true,
+                changeMonth: true,
+                yearRange: '1965:-4',
+                dateFormat: "dd-mm-yy"
+            });
 
 
         // $('#auto_fill_btn').click(function() {

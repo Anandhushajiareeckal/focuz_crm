@@ -234,6 +234,7 @@ class StudentController extends Controller
         if (!$studentId) {
             $student->profile_completion = 1;
         }
+        
         $student->save();
 
         $student_id = $student->id;
@@ -270,6 +271,10 @@ class StudentController extends Controller
             'gpa' => 'nullable|string|max:255', //field_of_study
             'abc_id' => 'nullable|string|max:255',
             'deb_id' => 'nullable|string|max:255',
+            'sslc_board' => 'required|string|max:255',
+            'sslc_passout'  => 'required|string|max:255',
+            'intermediate_board' => 'required|string|max:255',
+            'intermediate_passout' => 'required|string|max:255',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -300,7 +305,12 @@ class StudentController extends Controller
         $education->institution_id = $request->input('university');
         $education->abc_id = $request->input('abc_id');
         $education->deb_id = $request->input('deb_id');
+        $education->sslc_board = $request->input('sslc_board');
+        $education->sslc_passout = $request->input('sslc_passout');
+        $education->intermediate_board = $request->input('intermediate_board');
+        $education->intermediate_passout = $request->input('intermediate_passout');
 
+        
         $education->save();
         $this->update_profile_completion($request->input('student_id'), 1, 2);
 
@@ -417,34 +427,26 @@ class StudentController extends Controller
 
 
         $bindings = $studentsQuery->getBindings();
-        if ($data_posted == true && count($bindings) == 0) {
-            $students_data = [];
+        if ($data_posted && count($bindings) == 0) {
+            $students_data = collect([]);
         } else {
-            if ($request->input('excel') !== null && $request->input('excel') == "true") {
-                $fileName = 'students_' . Auth::id() . '.xlsx';
-
-                $filePath = 'public/exports/' . $fileName;
-                $directory = dirname($filePath);
-                if (!Storage::exists($directory)) {
-                    Storage::makeDirectory($directory);
-                }
-                Excel::store(new StudentsExport($studentsQuery->get()), $filePath);
-                $storage_path = Storage::url($filePath);
-                return response()->json(["status" => "success", 'filePath' => "public/" . $storage_path]);
-            } else {
-                $students_data = $studentsQuery->paginate(1000);
+            // Excel export
+            if ($request->input('excel') === 'true') {
+                $fileName = 'students_' . date('Ymd_His') . '.xlsx';
+                return Excel::download(new StudentsExport($studentsQuery->get()), $fileName);
             }
+
+            $students_data = $studentsQuery->paginate(1000);
         }
 
-
-        return view(
-            'students.view_students',
-            [
-                'students_data' => $students_data,
-                'dataAr' => $data
-            ]
-        );
+        return view('students.view_students', [
+            'students_data' => $students_data,
+            'dataAr' => $data
+        ]);
     }
+
+
+    
  public function updateDocumentVerificationStatus(Request $request, $id)
     {
         $request->validate([

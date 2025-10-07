@@ -16,9 +16,9 @@
                 <a class="btn btn-sm btn-dark" href="{{ route('view_students') }}">
                     <i class="fa fa-eraser"></i>&nbsp;&nbsp;Clear Filter
                 </a>
-                <button class="btn btn-sm btn-warning" id="export_excel">
-                    <i class="fa fa-download" aria-hidden="true"></i>
-                </button>
+               <a href="{{ route('view_students', ['excel' => 'true']) }}" id="export_excel" class="btn btn-sm btn-warning">
+                    <i class="fa fa-download" aria-hidden="true"></i>&nbsp;&nbsp;Export Excel
+                </a>
                 <button class="btn btn-sm btn-primary" id="filter_options">
                     <i class="fa fa-filter"></i>
                 </button>
@@ -91,23 +91,32 @@ $(document).ready(function() {
     });
 
     // Export to Excel
-    $('#export_excel').click(function(e) {
-        e.preventDefault();
-        const filterParams = getFilterParams("true");
-        preloader.load();
-        $.ajax({
-            type: "post",
-            url: "{{ route('view_students') }}",
-            data: filterParams,
-            success: function(response) {
-                preloader.stop();
-                if (response.status == 'success') {
-                    $('#download').attr('href', response.filePath);
-                    $('#download')[0].click();
-                }
-            }
-        });
-    });
+     // Export Excel
+document.getElementById('export_excel').addEventListener('click', function() {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = "{{ route('view_students') }}";
+
+    const data = {
+        _token: "{{ csrf_token() }}",
+        excel: "true",
+        name: "{{ $name }}",
+        phone_number: "{{ $phone_number }}",
+        email: "{{ $email }}"
+    };
+
+    for (const key in data) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = data[key];
+        form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+});
+
 
     // Filter modal
     $('#filter_options').click(async function(e) {

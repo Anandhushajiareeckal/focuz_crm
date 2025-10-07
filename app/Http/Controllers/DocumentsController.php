@@ -83,6 +83,9 @@ class DocumentsController extends Controller
             'prolfile_completed' => $prolfile_completed
         ], 200);
     }
+
+
+    
     // Show verification page (list)
     public function verify()
 {
@@ -91,6 +94,8 @@ class DocumentsController extends Controller
 
     return view('documents.verify', compact('documents'));
 }
+
+
 
 
 

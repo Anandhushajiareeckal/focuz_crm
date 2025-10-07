@@ -20,14 +20,14 @@
                             <th>Category</th>
                             <th>Document</th>
                             <th>Status</th>
-                            <th> Uploade Welcome Mail Screenshot</th>
+                            <th>Verification Screenshot</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($documents as $key => $doc)
                         <tr id="row_{{ $doc->id }}">
-                            {{-- ✅ SL No with pagination support --}}
+                            {{-- SL No with pagination support --}}
                             <td>{{ ($documents->currentPage() - 1) * $documents->perPage() + ($key + 1) }}</td>
 
                             <td>
@@ -39,26 +39,28 @@
                             <td>
                                 <a href="{{ asset('storage/'.$doc->document_path) }}" target="_blank">View File</a>
                             </td>
-                                                <td class="{{ $doc->status === 'approved' 
+                            <td class="{{ $doc->status === 'approved' 
                                     ? 'text-success' 
                                     : ($doc->status === 'rejected' 
                                         ? 'text-danger' 
-                                                        : 'text-warning') }}">
-                            {{ $doc->status ? ucfirst($doc->status) : 'Verification Pending...' }}
-                        </td>
-
-                            <td>
-                                @if($doc->verification_screenshot)
-                                    <a href="{{ asset('storage/'.$doc->verification_screenshot) }}" 
-                                       target="_blank" class="btn btn-sm btn-secondary mb-1">
-                                        View Screenshot
-                                    </a>
-                                @endif
-                                <input type="file" class="form-control form-control-sm screenshot-input"
-                                       data-id="{{ $doc->id }}">
+                                        : 'text-warning') }}">
+                                {{ $doc->status ? ucfirst($doc->status) : 'Verification Pending...' }}
                             </td>
-
                             
+                           <td>
+    {{-- View uploaded screenshot if exists --}}
+    @if($doc->verification_screenshot)
+        <a href="{{ asset('storage/'.$doc->verification_screenshot) }}" 
+           target="_blank" class="btn btn-sm btn-secondary mb-1">
+            View
+        </a>
+    @endif
+
+    {{-- Upload new screenshot --}}
+    <input type="file" class="form-control form-control-sm screenshot-input"
+           data-id="{{ $doc->id }}">
+</td>
+
                             <td>
                                 <button type="button" class="btn btn-sm btn-info update-status"
                                         data-id="{{ $doc->id }}" data-status="approved">
@@ -81,18 +83,13 @@
         </div>
     </div>
 </section>
-
-
 @endsection
-@section('script')
 
+@section('script')
 <script>
 $(document).ready(function() {
-    
-
-    //  Approve/Reject with optional screenshot upload
+    // Approve/Reject document status with optional screenshot upload
     $(document).on('click', '.update-status', function(e) {
-        
         e.preventDefault();
         var id = $(this).data('id');
         var status = $(this).data('status');
@@ -102,8 +99,8 @@ $(document).ready(function() {
         formData.append('_token', "{{ csrf_token() }}");
         formData.append('document_id', id);
         formData.append('status', status);
-        console.log(status);
         
+        // Append screenshot if selected
         if (fileInput && fileInput.files.length > 0) {
             formData.append('screenshot', fileInput.files[0]);
         }
@@ -117,26 +114,8 @@ $(document).ready(function() {
                 processData: false,
                 success: function(response) {
                     if (response.success) {
-                        let row = $('#row_' + id);
-                        let statusCell = row.find('.status-cell');
+                        // Reload to show updated screenshot link if uploaded
                         window.location.reload();
-                        // // Update plain colored text
-                        // if (status === 'approved') {
-                        //     statusCell.html('<span style="color:green; font-weight:bold;">Approved</span>');
-                        // } else if (status === 'rejected') {
-                        //     statusCell.html('<span style="color:red; font-weight:bold;">Rejected</span>');
-                        // } else {
-                        //     statusCell.html('<span style="color:orange; font-weight:bold;">Pending</span>');
-                        // }
-
-                        // //  Update screenshot link if new screenshot uploaded
-                        // if (response.screenshot_url) {
-                        //     let screenshotCell = row.find('td:nth-child(6)');
-                        //     screenshotCell.find('.btn-secondary').remove();
-                        //     screenshotCell.prepend(
-                        //         '<a href="'+response.screenshot_url+'" target="_blank" class="btn btn-sm btn-secondary mb-1">View Screenshot</a>'
-                        //     );
-                        // }
                     } else {
                         alert("Error: " + response.message);
                     }
@@ -147,15 +126,11 @@ $(document).ready(function() {
             });
         }
     });
-});
 
-
-$('#documents_table').DataTable({
+    $('#documents_table').DataTable({
         lengthMenu: [10, 25, 100, 500],
         pageLength: 25
     });
-
-
+});
 </script>
-
 @endsection

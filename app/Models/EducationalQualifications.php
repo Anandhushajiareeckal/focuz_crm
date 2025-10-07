@@ -18,7 +18,11 @@ class EducationalQualifications extends Model
         'institution_id',
         'degree_id',
         'abc_id',
-        'deb_id'
+        'deb_id',
+        'sslc_board',
+        'sslc_passout',
+        'intermediate_board',
+        'intermediate_passout'
     ];
 
     public function university()

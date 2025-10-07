@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{ asset('/css/jquery-ui.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/css/ajax_loader.css') }}">
 
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -109,6 +109,7 @@
     <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>
     <script src="{{ asset('js/adminlte.js?v=3.2.0') }}"></script>
 
+    
     <script>
         $(document).ready(function() {
             // const currentPath = "{{ $path }}";
@@ -135,9 +136,9 @@
             // });
         });
     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('/js/jquery.min.js') }}"></script>
-
-    <script src="{{ asset('/js/jquery.min.js') }}"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
     <script>
         // attach CSRF token to ALL jQuery AJAX requests
