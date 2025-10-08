@@ -339,14 +339,15 @@ class StudentController extends Controller
         ->leftJoin('course_payments', 'students.id', '=', 'course_payments.student_id')
         ->leftJoin('documents', 'students.id', '=', 'documents.student_id');
 
-    // If a university filter is present, join schedules + courses and filter by courses.university_id
-    if ($request->has('university_id') && !empty($request->input('university_id'))) {
-        $university_id = $request->input('university_id');
+  if ($request->has('university_id') && !empty($request->input('university_id'))) {
+    $university_id = $request->input('university_id');
 
-        $studentsQuery->leftJoin('course_schedules', 'course_payments.course_schedule_id', '=', 'course_schedules.id')
-                      ->leftJoin('courses', 'course_schedules.course_id', '=', 'courses.id')
-                      ->where('courses.university_id', $university_id);
-    }
+    $studentsQuery->leftJoin('course_schedules', 'course_payments.course_schedule_id', '=', 'course_schedules.id')
+                  ->leftJoin('courses', 'course_schedules.course_id', '=', 'courses.id')
+                  ->where('courses.university_id', $university_id);
+}
+
+
 
     // select columns (same as your original)
     $studentsQuery = $studentsQuery->select(
@@ -437,8 +438,8 @@ class StudentController extends Controller
     }
 
     return view('students.view_students', [
-        'students_data' => $students_data,
-        'dataAr' => $data
+    'students_data' => $students_data,
+    'dataAr' => $data
     ]);
 }
 
@@ -447,9 +448,14 @@ class StudentController extends Controller
 
 public function getUniversities() {
     
-    $universities = Universities::select('id','name','university_code')->get();
-    return response()->json($universities);
-}
+     $universities = DB::table('universities')
+            ->select('id', 'name', 'university_code')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($universities);
+    }
+
 
 
  public function updateDocumentVerificationStatus(Request $request, $id)
