@@ -9,6 +9,16 @@ class Universities extends Model
 {
     use HasFactory;
 
+    
+    protected $table = 'universities';
+
+    protected $fillable = [
+        'country_id',
+        'name',
+        'university_code',
+        'status'
+    ];
+
     public function educationalqualification()
     {
         return $this->hasMany(EducationalQualifications::class, 'institution_id');

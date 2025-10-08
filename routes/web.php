@@ -84,6 +84,8 @@ Route::post('/documents/update-status', [DocumentsController::class, 'updateStat
 
 
 
+// AJAX: get active universities for dashboard modal
+Route::get('/get-universities', [StudentController::class, 'getUniversities'])->name('get_universities');
 
 
 
