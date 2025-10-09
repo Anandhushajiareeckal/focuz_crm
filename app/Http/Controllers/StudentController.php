@@ -339,13 +339,21 @@ class StudentController extends Controller
         ->leftJoin('course_payments', 'students.id', '=', 'course_payments.student_id')
         ->leftJoin('documents', 'students.id', '=', 'documents.student_id');
 
-  if ($request->has('university_id') && !empty($request->input('university_id'))) {
-    $university_id = $request->input('university_id');
+  $university_id = $request->input('university_id', session('selected_university_id'));
 
-    $studentsQuery->leftJoin('course_schedules', 'course_payments.course_schedule_id', '=', 'course_schedules.id')
-                  ->leftJoin('courses', 'course_schedules.course_id', '=', 'courses.id')
-                  ->where('courses.university_id', $university_id);
+if (!empty($university_id)) {
+    session(['selected_university_id' => $university_id]); // Keep session updated
+
+    $studentsQuery->whereExists(function($query) use ($university_id) {
+        $query->select(DB::raw(1))
+              ->from('course_payments')
+              ->join('course_schedules', 'course_payments.course_schedule_id', '=', 'course_schedules.id')
+              ->join('courses', 'course_schedules.course_id', '=', 'courses.id')
+              ->whereRaw('course_payments.student_id = students.id')
+              ->where('courses.university_id', $university_id);
+    });
 }
+
 
 
 
