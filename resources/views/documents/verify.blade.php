@@ -20,7 +20,7 @@
                             <th>Category</th>
                             <th>Document</th>
                             <th>Status</th>
-                            <th>Upload Verification Screenshot</th>
+                            <th>UploadVerification Screenshot</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -48,40 +48,45 @@
                             </td>
 
                             <td>
-                            <div class="d-flex flex-column gap-2">
+                                <div class="d-flex flex-column gap-2">
 
-                                {{-- Thumbnail --}}
-                                <div class="d-flex align-items-center gap-2">
-                                    @if($doc->verification_screenshot)
+                                    {{-- Thumbnail --}}
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if($doc->verification_screenshot)
                                         <div class="border rounded p-1">
                                             <img src="{{ route('documents.view-screenshot', $doc->id) }}" alt="Screenshot"
                                                 class="img-thumbnail" style="width:80px; height:auto;">
                                         </div>
-                                    @else
+                                        @else
                                         <span class="text-muted small">No file uploaded</span>
-                                    @endif
+                                        @endif
+                                    </div>
+
+                                    {{-- File input --}}
+                                    <input type="file" class="form-control form-control-sm screenshot-input" data-id="{{ $doc->id }}">
+
+                                    {{-- Action buttons (same row) --}}
+                                   <div class="d-flex mt-1" style="gap:4px;">
+ {{-- smaller gap --}}
+    {{-- Save button --}}
+    <button type="button" class="btn btn-sm btn-primary save-screenshot" data-id="{{ $doc->id }}" title="Save">
+        <span class="iconify" data-icon="mdi:upload" data-inline="false"></span>
+    </button>
+
+    {{-- View button --}}
+    @if($doc->verification_screenshot)
+    <a href="{{ route('documents.view-screenshot', $doc->id) }}" target="_blank" 
+       class="btn btn-sm btn-warning" title="View">
+        <span class="iconify" data-icon="mdi:eye" data-inline="false"></span>
+    </a>
+    @endif
+</div>
+
+
+
+
                                 </div>
-
-                                {{-- File input --}}
-                                <input type="file" class="form-control form-control-sm screenshot-input" data-id="{{ $doc->id }}">
-
-                                {{-- Action buttons (same row) --}}
-                                <div class="d-flex mt-1" style="gap: 4px;">
-                            <button type="button" class="btn btn-sm btn-primary save-screenshot" data-id="{{ $doc->id }}" title="Save">
-                                <i class="fas fa-upload"></i>
-                            </button>
-                            @if($doc->verification_screenshot)
-                            <a href="{{ route('documents.view-screenshot', $doc->id) }}" target="_blank" 
-                            class="btn btn-sm" 
-                            style="background: #ffbc00; color: #000000; border-color: #ffbc00;" title="View">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            @endif
-                        </div>
-
-
-                            </div>
-                        </td>
+                            </td>
 
 
 
