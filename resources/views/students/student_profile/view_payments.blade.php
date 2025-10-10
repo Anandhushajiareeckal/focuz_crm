@@ -30,7 +30,7 @@
                             <td>Balance Amount</td>
                             <td>Status</td>
                             <td>Invoice</td>
-                            <td>Offer Letters</td>
+                            <td>Offer Letter</td>
                         </tr>
                     </thead>
                     <tbody>

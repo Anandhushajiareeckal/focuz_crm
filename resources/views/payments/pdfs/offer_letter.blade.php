@@ -47,7 +47,8 @@
             left: 50%;
             width: 383px;
             height: 308px;
-            background: url('{{ asset('images/logo.jpg') }}') no-repeat center center;
+            background: url('{{ asset('images/logo.jpg') }}'); /* Path to your logo */
+
             background-size: contain;
             opacity: 0.07;
             /* Faded effect */
@@ -332,11 +333,11 @@
             </tr>
             <tr>
                 <td>University</td>
-                <td>SVSU</td>
+                <td>{{ $student -> university }}</td>
             </tr>
             <tr>
                 <td>Center</td>
-                <td>TRIVADRAM</td>
+                <td>{{$student -> center}}</td>
             </tr>
             <tr>
                 <td>Track ID</td>

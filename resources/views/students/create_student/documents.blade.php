@@ -1,4 +1,4 @@
-<div class="card card-default ">
+F<div class="card card-default ">
     {{-- collapsed-card --}}
     <div class="card-header">
         <h3 class="card-title"> Document Upload</h3>
@@ -88,7 +88,7 @@
             var formData = new FormData(this);
             //console.log(formData)
             $.ajax({
-                url: '{{ route('upload_student_docs') }}', // Laravel route for file upload
+                url: '{{route('upload_student_docs')}}', // Laravel route for file upload
                 type: 'POST',
                 data: formData,
                 contentType: false,

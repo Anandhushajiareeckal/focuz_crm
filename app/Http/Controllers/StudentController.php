@@ -235,7 +235,7 @@ class StudentController extends Controller
         if (!$studentId) {
             $student->profile_completion = 1;
         }
-        
+
         $student->save();
 
         $student_id = $student->id;
@@ -311,7 +311,7 @@ class StudentController extends Controller
         $education->intermediate_board = $request->input('intermediate_board');
         $education->intermediate_passout = $request->input('intermediate_passout');
 
-        
+
         $education->save();
         $this->update_profile_completion($request->input('student_id'), 1, 2);
 
@@ -325,40 +325,36 @@ class StudentController extends Controller
     }
 
     public function view_students(Request $request, $search = null)
-{
-    $data_posted = false;
-    $data = [];
-    if ($request->isMethod('post')) {
-        $data = $request->all();
-        unset($data['_token']);
-        $data_posted = empty(array_filter($data)) ? true : false;
-    }
-
-    // Base query
-    $studentsQuery = DB::table('students')
-        ->leftJoin('course_payments', 'students.id', '=', 'course_payments.student_id')
-        ->leftJoin('documents', 'students.id', '=', 'documents.student_id');
-
-  $university_id = $request->input('university_id', session('selected_university_id'));
-
-if (!empty($university_id)) {
-    session(['selected_university_id' => $university_id]); // Keep session updated
-
-    $studentsQuery->whereExists(function($query) use ($university_id) {
-        $query->select(DB::raw(1))
-              ->from('course_payments')
-              ->join('course_schedules', 'course_payments.course_schedule_id', '=', 'course_schedules.id')
-              ->join('courses', 'course_schedules.course_id', '=', 'courses.id')
-              ->whereRaw('course_payments.student_id = students.id')
-              ->where('courses.university_id', $university_id);
-    });
-}
+    {
+        $data_posted = false;
+        $data = [];
+        if ($request->isMethod('post')) {
+            $data = $request->all();
+            unset($data['_token']);
+            $data_posted = empty(array_filter($data)) ? true : false;
+        }
 
 
+        $studentsQuery = DB::table('students')
+            ->leftJoin('course_payments', 'students.id', '=', 'course_payments.student_id')
+            ->leftJoin('documents', 'students.id', '=', 'documents.student_id');
 
+        $university_id = $request->input('university_id', session('selected_university_id'));
 
-    // select columns (same as your original)
-    $studentsQuery = $studentsQuery->select(
+        if (!empty($university_id)) {
+            session(['selected_university_id' => $university_id]); // Keep session updated
+
+            $studentsQuery->whereExists(function ($query) use ($university_id) {
+                $query->select(DB::raw(1))
+                    ->from('course_payments')
+                    ->join('course_schedules', 'course_payments.course_schedule_id', '=', 'course_schedules.id')
+                    ->join('courses', 'course_schedules.course_id', '=', 'courses.id')
+                    ->whereRaw('course_payments.student_id = students.id')
+                    ->where('courses.university_id', $university_id);
+            });
+        }
+
+        $studentsQuery = $studentsQuery->select(
             'students.id',
             'students.city_id',
             'students.state_id',
@@ -387,76 +383,77 @@ if (!empty($university_id)) {
             'course_payments.university_loginpass',
             'course_payments.branch_id'
         )
-        ->distinct();
+            ->distinct();
 
-    // Filters map (unchanged)
-    $filters = [
-        'first_name' => ['column' => 'students.first_name', 'operator' => 'like'],
-        'gender' => ['column' => 'students.gender', 'operator' => '='],
-        'phone_number' => ['column' => 'students.phone_number', 'operator' => 'like'],
-        'marital_status' => ['column' => 'students.marital_status', 'operator' => 'in'],
-        'email' => ['column' => 'students.email', 'operator' => 'like'],
-        'employment_status' => ['column' => 'students.employment_status', 'operator' => 'in'],
-        'pending_profile_completion' => ['column' => 'students.profile_completion', 'operator' => '='],
-        'pending_payments' => ['column' => 'course_payments.payment_status', 'operator' => '='],
-        'city' => ['column' => 'students.city_id', 'operator' => 'in'],
-        'state' => ['column' => 'students.state_id', 'operator' => '='],
-        'country' => ['column' => 'students.country_id', 'operator' => '='],
-        'course' => ['column' => 'course_payments.course_id', 'operator' => 'in'],
-    ];
+        // Filters map (unchanged)
+        $filters = [
+            'first_name' => ['column' => 'students.first_name', 'operator' => 'like'],
+            'gender' => ['column' => 'students.gender', 'operator' => '='],
+            'phone_number' => ['column' => 'students.phone_number', 'operator' => 'like'],
+            'marital_status' => ['column' => 'students.marital_status', 'operator' => 'in'],
+            'email' => ['column' => 'students.email', 'operator' => 'like'],
+            'employment_status' => ['column' => 'students.employment_status', 'operator' => 'in'],
+            'pending_profile_completion' => ['column' => 'students.profile_completion', 'operator' => '='],
+            'pending_payments' => ['column' => 'course_payments.payment_status', 'operator' => '='],
+            'city' => ['column' => 'students.city_id', 'operator' => 'in'],
+            'state' => ['column' => 'students.state_id', 'operator' => '='],
+            'country' => ['column' => 'students.country_id', 'operator' => '='],
+            'course' => ['column' => 'course_payments.course_id', 'operator' => 'in'],
+        ];
 
-    foreach ($filters as $key => $filter) {
-        if ($request->has($key) && $request->input($key)) {
-            $value = $request->input($key);
+        foreach ($filters as $key => $filter) {
+            if ($request->has($key) && $request->input($key)) {
+                $value = $request->input($key);
 
-            if ($filter['operator'] == 'like') {
-                $studentsQuery->where($filter['column'], 'like', '%' . $value . '%');
-            } elseif ($filter['operator'] == 'in') {
-                if (is_string($value)) {
-                    $value = explode(',', $value);
+                if ($filter['operator'] == 'like') {
+                    $studentsQuery->where($filter['column'], 'like', '%' . $value . '%');
+                } elseif ($filter['operator'] == 'in') {
+                    if (is_string($value)) {
+                        $value = explode(',', $value);
+                    }
+                    $studentsQuery->whereIn($filter['column'], $value);
+                } else {
+                    $studentsQuery->where($filter['column'], $value);
                 }
-                $studentsQuery->whereIn($filter['column'], $value);
-            } else {
-                $studentsQuery->where($filter['column'], $value);
             }
         }
-    }
 
-    if ($search = $request->input('search')) {
-        if ($search == 'new') {
-            $created_from_date = Carbon::now()->startOfMonth()->toDateString();
-            $created_to_date = Carbon::now()->endOfMonth()->toDateString();
-            $studentsQuery->whereBetween('students.created_at', [$created_from_date, $created_to_date]);
-        } elseif ($search == 'unpaid') {
-            $studentsQuery->where('course_payments.payment_status', 'pending');
-        }
-    }
-
-    $bindings = $studentsQuery->getBindings();
-    if ($data_posted && count($bindings) == 0) {
-        $students_data = collect([]);
-    } else {
-        // Excel export
-        if ($request->input('excel') === 'true') {
-            $fileName = 'students_' . date('Ymd_His') . '.xlsx';
-            return Excel::download(new StudentsExport($studentsQuery->get()), $fileName);
+        if ($search = $request->input('search')) {
+            if ($search == 'new') {
+                $created_from_date = Carbon::now()->startOfMonth()->toDateString();
+                $created_to_date = Carbon::now()->endOfMonth()->toDateString();
+                $studentsQuery->whereBetween('students.created_at', [$created_from_date, $created_to_date]);
+            } elseif ($search == 'unpaid') {
+                $studentsQuery->where('course_payments.payment_status', 'pending');
+            }
         }
 
-        $students_data = $studentsQuery->paginate(1000);
+        $bindings = $studentsQuery->getBindings();
+        if ($data_posted && count($bindings) == 0) {
+            $students_data = collect([]);
+        } else {
+            // Excel export
+            if ($request->input('excel') === 'true') {
+                $fileName = 'students_' . date('Ymd_His') . '.xlsx';
+                return Excel::download(new StudentsExport($studentsQuery->get()), $fileName);
+            }
+
+            $students_data = $studentsQuery->paginate(1000);
+        }
+
+        return view('students.view_students', [
+            'students_data' => $students_data,
+            'dataAr' => $data
+        ]);
     }
 
-    return view('students.view_students', [
-    'students_data' => $students_data,
-    'dataAr' => $data
-    ]);
-}
 
 
 
+    public function getUniversities()
+    {
 
-public function getUniversities() {
-    
-     $universities = DB::table('universities')
+        $universities = DB::table('universities')
             ->select('id', 'name', 'university_code')
             ->orderBy('name')
             ->get();
@@ -466,7 +463,7 @@ public function getUniversities() {
 
 
 
- public function updateDocumentVerificationStatus(Request $request, $id)
+    public function updateDocumentVerificationStatus(Request $request, $id)
     {
         $request->validate([
             'status' => 'required|in:pending,approved,rejected'
@@ -686,30 +683,30 @@ public function getUniversities() {
                 DB::raw("CONCAT(streams.code, ' ', courses.specialization, ', ', universities.university_code) AS name")
             )
             ->get();
-            
-            return view('students.view_students.view_student_filter', [
-                'marital_statusAr' => $marital_statusAr,
-                'employment_statusesAr' => $employment_statusesAr,
-                'countriesAr' => $countriesAr,
-                'coursesAr' => $coursesAr,
-                'name' => $request->input('name'),
-                'gender' => $request->input('gender'),
-                'phone_number' => $request->input('phone_number'),
-                'email' => $request->input('email'),
-                'country' => $country,
-                'state' => $state,
-                'city' => $city,
-                'university' => $request->input('university'),
-                'degree' => $request->input('degree'),
-                'course' => explode(",", $request->input('course')),
-                'profile_completionAr' => $profile_completionAr,
-                'genderAr' => $genderAr,
-                'paymentStatusAr' => $paymentStatusAr,
-                'pending_payments' =>  $request->input('pending_payments'),
-                'pending_profile_completion' =>  $request->input('pending_profile_completion'),
-                'states' => $states,
-                'cities' => $cities
-            ]);
+
+        return view('students.view_students.view_student_filter', [
+            'marital_statusAr' => $marital_statusAr,
+            'employment_statusesAr' => $employment_statusesAr,
+            'countriesAr' => $countriesAr,
+            'coursesAr' => $coursesAr,
+            'name' => $request->input('name'),
+            'gender' => $request->input('gender'),
+            'phone_number' => $request->input('phone_number'),
+            'email' => $request->input('email'),
+            'country' => $country,
+            'state' => $state,
+            'city' => $city,
+            'university' => $request->input('university'),
+            'degree' => $request->input('degree'),
+            'course' => explode(",", $request->input('course')),
+            'profile_completionAr' => $profile_completionAr,
+            'genderAr' => $genderAr,
+            'paymentStatusAr' => $paymentStatusAr,
+            'pending_payments' =>  $request->input('pending_payments'),
+            'pending_profile_completion' =>  $request->input('pending_profile_completion'),
+            'states' => $states,
+            'cities' => $cities
+        ]);
     }
 
     public function view_profile($step, $student_id)
@@ -738,7 +735,7 @@ public function getUniversities() {
             )
                 ->where('student_id', $student_id)
                 ->where('status', 'active')
-                
+
                 ->get();
 
 
@@ -806,5 +803,4 @@ public function getUniversities() {
         });
         return response()->json($results);
     }
-    
 }

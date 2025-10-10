@@ -18,37 +18,63 @@ class CourseController extends Controller
 {
 
     public function load_courses(Request $request)
-    {
-        $student_id = $request->input('student_id');
-        $courses_selected = CoursePayments::where('student_id', $student_id)->where('status', 'active')->pluck('course_id');
-        $courses_unselected = DB::table('courses')
-            ->join('universities', 'courses.university_id', '=', 'universities.id')
-            ->join('streams', 'courses.stream_id', '=', 'streams.id')
-            ->whereNotIn('courses.id', $courses_selected)
-            ->where('courses.status', 'active')
-            ->select(
-                'courses.id',
-                DB::raw("CONCAT(streams.code, ' ', courses.specialization, ', ', universities.name, ' (', universities.university_code,')') AS name")
-            )
-            ->get();
+{
+    $student_id = $request->input('student_id');
 
-        $courses_selected = DB::table('courses')
-            ->join('universities', 'courses.university_id', '=', 'universities.id')
-            ->join('streams', 'courses.stream_id', '=', 'streams.id')
-            ->whereIn('courses.id', $courses_selected)
-            ->select(
-                'courses.id',
-                DB::raw("CONCAT(streams.code, ' ', courses.specialization, ', ', universities.name , ' (', universities.university_code,')') AS name")
-            )
-            ->get();
+    // Get the IDs of courses the student has already paid for
+    $courses_selected_ids = CoursePayments::where('student_id', $student_id)
+        ->where('status', 'active')
+        ->pluck('course_id');
 
+    // Fetch unselected courses
+    $courses_unselected = DB::table('courses')
+        ->join('universities', 'courses.university_id', '=', 'universities.id')
+        ->join('streams', 'courses.stream_id', '=', 'streams.id')
+        ->whereNotIn('courses.id', $courses_selected_ids)
+        ->where('courses.status', 'active')
+        ->select(
+            'courses.id',
+            DB::raw("CONCAT(streams.code, ' ', courses.specialization, ', ', universities.name, ' (', universities.university_code,')') AS name")
+        )
+        ->get();
 
-        $returnData = [
-            "courses_unselected" =>  $courses_unselected,
-            "courses_selected" => $courses_selected
-        ];
-        return response()->json($returnData);
+    // Fetch selected courses
+    $courses_selected = DB::table('courses')
+        ->join('universities', 'courses.university_id', '=', 'universities.id')
+        ->join('streams', 'courses.stream_id', '=', 'streams.id')
+        ->whereIn('courses.id', $courses_selected_ids)
+        ->select(
+            'courses.id',
+            DB::raw("CONCAT(streams.code, ' ', courses.specialization, ', ', universities.name , ' (', universities.university_code,')') AS name")
+        )
+        ->get();
+
+    // Ensure B.Tech is included (unselected if not already in the list)
+    $btechCourse = DB::table('courses')
+        ->join('universities', 'courses.university_id', '=', 'universities.id')
+        ->join('streams', 'courses.stream_id', '=', 'streams.id')
+        ->where('courses.specialization', 'B.Tech')
+        ->where('courses.status', 'active')
+        ->select(
+            'courses.id',
+            DB::raw("CONCAT(streams.code, ' ', courses.specialization, ', ', universities.name , ' (', universities.university_code,')') AS name")
+        )
+        ->first();
+
+    if ($btechCourse) {
+        $exists_in_selected = $courses_selected->contains('id', $btechCourse->id);
+        $exists_in_unselected = $courses_unselected->contains('id', $btechCourse->id);
+
+        if (!$exists_in_selected && !$exists_in_unselected) {
+            $courses_unselected->push($btechCourse);
+        }
     }
+
+    return response()->json([
+        "courses_unselected" =>  $courses_unselected,
+        "courses_selected" => $courses_selected
+    ]);
+}
 
     public function loadCoursesAPI(Request $request)
     {

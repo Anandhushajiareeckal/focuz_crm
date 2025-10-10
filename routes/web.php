@@ -81,6 +81,12 @@ Route::middleware(['auth', 'verified', 'check_url_access'])->group(function () {
 
     Route::get('/documents', [DocumentsController::class, 'verify'])->name('documents.verify');
 Route::post('/documents/update-status', [DocumentsController::class, 'updateStatus'])->name('documents.update-status');
+Route::post('/documents/save-screenshot', [DocumentsController::class, 'saveScreenshot'])->name('documents.save-screenshot');
+Route::post('/documents/upload-screenshot', [DocumentsController::class, 'uploadScreenshot'])
+    ->name('documents.upload-screenshot');
+
+Route::get('/documents/view-screenshot/{id}', [DocumentsController::class, 'viewScreenshot'])
+    ->name('documents.view-screenshot');
 
 
 

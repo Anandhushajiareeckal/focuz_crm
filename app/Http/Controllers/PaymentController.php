@@ -523,7 +523,7 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function InvoicePrint(Request $request)
+     public function InvoicePrint(Request $request)
     {
 
         $checked_ids = $request->input('checkedIdsJson');
@@ -673,8 +673,6 @@ class PaymentController extends Controller
             return $pdf_path;
         }
     }
-
-
 
     public function ViewPromotions()
     {

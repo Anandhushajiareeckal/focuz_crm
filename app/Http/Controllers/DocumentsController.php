@@ -96,12 +96,41 @@ class DocumentsController extends Controller
 }
 
 
+  public function uploadScreenshot(Request $request)
+    {
+        $request->validate([
+            'document_id' => 'required|exists:documents,id',
+            'screenshot'  => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
 
+        $doc = Documents::findOrFail($request->document_id);
+
+        $file = $request->file('screenshot');
+        $doc->verification_screenshot = file_get_contents($file->getRealPath());
+        $doc->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'File uploaded successfully!',
+        ]);
+    }
+
+    // Serve image from DB
+    public function viewScreenshot($id)
+    {
+        $doc = Documents::findOrFail($id);
+
+        if (!$doc->verification_screenshot) {
+            abort(404);
+        }
+
+        return response($doc->verification_screenshot)
+            ->header('Content-Type', $doc->verification_screenshot_type);
+    }
 
 
 public function updateStatus(Request $request)
 {
-    
     try {
         $request->validate([
             'document_id' => 'required|exists:documents,id',
@@ -111,37 +140,48 @@ public function updateStatus(Request $request)
 
         $doc = Documents::findOrFail($request->document_id);
 
+        // Prepare update data
         $updateData = [
             'status'      => $request->status,
             'verified_by' => auth()->id() ?? null,
             'verified_at' => now(),
         ];
 
+        // If screenshot uploaded → store & update DB path
         if ($request->hasFile('screenshot')) {
-            $path = $request->file('screenshot')->storeAs(
+            $file = $request->file('screenshot');
+
+            $path = $file->storeAs(
                 'verification_screenshots',
-                time() . '_' . $request->file('screenshot')->getClientOriginalName(),
+                time() . '_' . $file->getClientOriginalName(),
                 'public'
             );
+
+            // Save file path to DB
             $updateData['verification_screenshot'] = $path;
         }
 
+        // Update document
         $doc->update($updateData);
 
+        // Return success response
         return response()->json([
             'success'        => true,
             'status'         => $doc->status,
             'message'        => 'Document has been ' . $doc->status,
             'screenshot_url' => $doc->verification_screenshot ? asset('storage/' . $doc->verification_screenshot) : null
         ]);
+
     } catch (\Throwable $e) {
-        \Log::error('Update failed: '.$e->getMessage());
+        \Log::error('Document update failed: ' . $e->getMessage());
+
         return response()->json([
             'success' => false,
             'message' => $e->getMessage(),
         ], 500);
     }
 }
+
 
 
 }
