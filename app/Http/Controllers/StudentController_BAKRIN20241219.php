@@ -304,7 +304,7 @@ class StudentController extends Controller
 
     public function view_students(Request $request, $search = null)
     {
-
+        
         $query = Students::with('city:id,name', 'state:id,name', 'identity_card:id,name');
         $data = [];
         if ($request->isMethod('post')) {

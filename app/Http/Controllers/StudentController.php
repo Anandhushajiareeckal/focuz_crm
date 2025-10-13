@@ -418,15 +418,24 @@ class StudentController extends Controller
             }
         }
 
-        if ($search = $request->input('search')) {
-            if ($search == 'new') {
-                $created_from_date = Carbon::now()->startOfMonth()->toDateString();
-                $created_to_date = Carbon::now()->endOfMonth()->toDateString();
-                $studentsQuery->whereBetween('students.created_at', [$created_from_date, $created_to_date]);
-            } elseif ($search == 'unpaid') {
-                $studentsQuery->where('course_payments.payment_status', 'pending');
-            }
+        $search = $request->input('search');
+        if (!empty($search)) {
+            $studentsQuery->where(function ($query) use ($search) {
+                $query->where('students.first_name', 'like', "%{$search}%")
+                    ->orWhere('students.phone_number', 'like', "%{$search}%")
+                    ->orWhere('students.email', 'like', "%{$search}%");
+            });
         }
+
+        // if ($search = $request->input('search')) {
+        //     if ($search == 'new') {
+        //         $created_from_date = Carbon::now()->startOfMonth()->toDateString();
+        //         $created_to_date = Carbon::now()->endOfMonth()->toDateString();
+        //         $studentsQuery->whereBetween('students.created_at', [$created_from_date, $created_to_date]);
+        //     } elseif ($search == 'unpaid') {
+        //         $studentsQuery->where('course_payments.payment_status', 'pending');
+        //     }
+        // }
 
         $bindings = $studentsQuery->getBindings();
         if ($data_posted && count($bindings) == 0) {
@@ -443,7 +452,8 @@ class StudentController extends Controller
 
         return view('students.view_students', [
             'students_data' => $students_data,
-            'dataAr' => $data
+            'dataAr' => $data,
+            'search' => $search,
         ]);
     }
 
